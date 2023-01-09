@@ -28,20 +28,20 @@ def playGame():
     printBoard(board)
 
     turns = 1
-    p1, p2 = set(), set()
+    user, computer = set(), set()
     check = 'Continue'
 
     while turns <= 8:
-        if len(p1) > 2 or len(p2) > 2:
-            check = checkWinner(p1, p2)
+        if len(user) > 2 or len(computer) > 2:
+            check = checkWinner(user, computer)
             if check != 'Continue':
                 print(check)
                 break
-        turns, board, p1, p2 = player(turns, board, p1, p2)
+        turns, board, user, computer = player(turns, board, user, computer)
     else:
         print("The game is a tie!")
 
-def player(turns, board, p1, p2):
+def player(turns, board, user, computer):
     # player is called to enter in a value input and the board is updated if valid value
     # the GUI is called afterwards
     if turns % 2 != 0 or turns == 1:
@@ -51,11 +51,11 @@ def player(turns, board, p1, p2):
             value = int(input("You entered an invalid number, enter a number between 0 to 8: "))
         elif board[value] in ['X', 'O']:
             value = int(input("The cell you picked is already filled, please pick a new number: "))
-        p1.add(value)
+        user.add(value)
     else: 
         player = 'O'
-        value = computerPlayer(p1, p2, board)
-        p2.add(value)
+        value = computerPlayer(user, computer, board)
+        computer.add(value)
         print('Player O played {0} value'.format(value))
 
     board[value] = player
@@ -63,24 +63,24 @@ def player(turns, board, p1, p2):
     value = None
     printBoard(board)
 
-    return turns, board, p1, p2
+    return turns, board, user, computer
 
-def computerPlayer(p1, p2, board):
+def computerPlayer(user, computer, board):
     # the GUI first checks to see if it can win or block
-    px, po = p1.copy(), p2.copy()
+    userCopy, computerCopy = user.copy(), computer.copy()
     for value in range(len(board)):
         if board[value] not in ['X', 'O']:
-            po.add(value)
-            px.add(value)
-            if len(po) >= 3 or len(px) >= 3:
-                check1, check2 = checkWinner(px, p2), checkWinner(p1, po)
+            computerCopy.add(value)
+            userCopy.add(value)
+            if len(userCopy) >= 3 or len(computerCopy) >= 3:
+                check1, check2 = checkWinner(computerCopy, computer), checkWinner(user, userCopy)
                 if check1 == "!!! Player 1 won the game !!!":
                     return value
                 elif check2 == "!!! Player 2 won the game !!!":
                     return value
                 else:
-                    po.remove(value)
-                    px.remove(value)
+                    userCopy.remove(value)
+                    computerCopy.remove(value)
     if board[4] == '4':
         return 4
     else:
@@ -90,15 +90,15 @@ def computerPlayer(p1, p2, board):
 
     
 
-def checkWinner(p1, p2):
+def checkWinner(user, computer):
     pattern = 0
     check = None
     patterns = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     while not check and pattern < 8:
-        if set(patterns[pattern]).issubset(p1):
+        if set(patterns[pattern]).issubset(user):
             check = "!!! Player 1 won the game !!!"
             return check
-        if set(patterns[pattern]).issubset(p2):
+        if set(patterns[pattern]).issubset(computer):
             check = "!!! Player 2 won the game !!!"
             return check
 
