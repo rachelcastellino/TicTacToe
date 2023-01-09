@@ -4,10 +4,12 @@ def main():
     playGame()
 
 def buildBoard():
+    # the players don't see this but this is a flattened playing board where values will be updated
     lst = ['0', '1', '2', '3','4', '5', '6', '7', '8']
     return lst
 
 def printBoard(board):
+    # makes the board you see to play on
     row = ''
     for n in range(len(board)):
         row += board[n]
@@ -20,11 +22,13 @@ def printBoard(board):
             row = ''
 
 def playGame():
+    # this is the primary function that calls the player or the GUI to play
+    # a tie will happen if there have been 8 turns played but no one has won yet
     board = buildBoard()
     printBoard(board)
+
     turns = 1
-    p1 = set()
-    p2 = set()
+    p1, p2 = set(), set()
     check = 'Continue'
 
     while turns <= 8:
@@ -38,7 +42,8 @@ def playGame():
         print("The game is a tie!")
 
 def player(turns, board, p1, p2):
-    print('turns', turns)
+    # player is called to enter in a value input and the board is updated if valid value
+    # the GUI is called afterwards
     if turns % 2 != 0 or turns == 1:
         player = 'X'
         value = int(input("Player X, enter a number between 0 to 8: "))
@@ -54,8 +59,6 @@ def player(turns, board, p1, p2):
         print('Player O played {0} value'.format(value))
 
     board[value] = player
-    print('p1', p1)
-    print('p2', p2)
     turns += 1
     value = None
     printBoard(board)
@@ -63,32 +66,21 @@ def player(turns, board, p1, p2):
     return turns, board, p1, p2
 
 def computerPlayer(p1, p2, board):
-    # computer player is always O
-    # return the value that it will play
-    px = p1.copy()
-    po = p2.copy()
-    # if computer player wins on next game play that one
-    print(id(px) == id(p1))
+    # the GUI first checks to see if it can win or block
+    px, po = p1.copy(), p2.copy()
     for value in range(len(board)):
         if board[value] not in ['X', 'O']:
             po.add(value)
-            if len(po) >= 3:
-                check = checkWinner(px, po)
-                if check == "!!! Player 2 won the game !!!":
-                    return value
-            else:
-                po.remove(value)
-    # else block X
-    for value in range(len(board)):
-        if board[value] not in ['X', 'O']:
             px.add(value)
-            if len(px) >= 3:
-                check = checkWinner(px, po)
-                if check == "!!! Player 1 won the game !!!":
+            if len(po) >= 3 or len(px) >= 3:
+                check1, check2 = checkWinner(px, p2), checkWinner(p1, po)
+                if check1 == "!!! Player 1 won the game !!!":
                     return value
-            else:
-                px.remove(value)
-    # else fill the middle
+                elif check2 == "!!! Player 2 won the game !!!":
+                    return value
+                else:
+                    po.remove(value)
+                    px.remove(value)
     if board[4] == '4':
         return 4
     else:
