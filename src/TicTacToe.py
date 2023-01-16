@@ -21,6 +21,8 @@ def printBoard(board):
                 print('---------')
             row = ''
 
+
+
 def playGame():
     # this is the primary function that calls the player or the GUI to play
     # a tie will happen if there have been 8 turns played but no one has won yet
@@ -47,6 +49,7 @@ def player(turns, board, user, computer):
     if turns % 2 != 0 or turns == 1:
         player = 'X'
         value = int(input("Player X, enter a number between 0 to 8: "))
+        # invalid character
         if value > 8 or value < 0:
             value = int(input("You entered an invalid number, enter a number between 0 to 8: "))
         elif board[value] in ['X', 'O']:
